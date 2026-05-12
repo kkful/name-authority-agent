@@ -1,4 +1,4 @@
-# 名称规范记录智能体
+# 名称规范记录智能体 v1.0
 
 网页搜捕 → 结构化提取 → dedup-librecord 匹配就绪
 
@@ -31,10 +31,10 @@ pip install -r requirements.txt
 
 ```
 author_agent/        # Python包
-  record.py          # 字段提取
-  cnki_api.py        # 知网API
-  cdp_client.py      # CDP Proxy
-  schema.py          # 字段定义
+  record.py          # 字段提取（论文目标句/官网全文）
+  cnki_api.py        # 知网同步XHR搜索
+  cdp_client.py      # CDP Proxy客户端
+  schema.py          # 16个字段定义
 server.py            # Flask Web服务
 static/index.html    # 前端界面
 entity_matching2/    # Excel输出
