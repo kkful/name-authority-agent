@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名称规范记录 — Author Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* === RESET & BASE === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#2c2424;--paper:#f5f0e8;--paper-dark:#e8e0d5;--paper-light:#faf7f2;
+  --stamp:#c75b39;--stamp-dark:#a04028;--stamp-light:#e88565;
+  --gold:#b8956a;--gold-light:#d4b98c;--gold-dark:#8a6d4a;
+  --moss:#5c7a62;--moss-light:#7a9c80;
+  --slate:#4a4a55;--slate-light:#6e6e7a;
+  --border:#d4cbbf;--shadow:0 2px 12px rgba(44,36,36,0.08);
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Source Serif 4',Georgia,serif;
+  --font-mono:'JetBrains Mono','Courier New',monospace;
+  --radius:2px;
+}
+html{font-size:16px;background:var(--paper)}
+body{
+  font-family:var(--font-body);color:var(--ink);background:var(--paper);
+  min-height:100vh;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.5;
+}
+
+/* === LAYOUT === */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{
+  width:260px;background:var(--ink);color:var(--paper-light);padding:32px 24px;
+  display:flex;flex-direction:column;gap:36px;flex-shrink:0;
+}
+.sidebar-logo{font-family:var(--font-display);font-size:1.25rem;font-weight:500;letter-spacing:0.02em;line-height:1.3}
+.sidebar-logo span{display:block;font-size:0.75rem;font-family:var(--font-mono);color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;margin-top:4px}
+.sidebar-nav{display:flex;flex-direction:column;gap:4px}
+.sidebar-nav a{
+  color:var(--paper-dark);text-decoration:none;font-size:0.9rem;padding:8px 12px;
+  border-left:2px solid transparent;transition:all 0.2s;
+  font-family:var(--font-body);letter-spacing:0.01em;
+}
+.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--paper-light);border-left-color:var(--stamp)}
+.sidebar-actions{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 18px;font-family:var(--font-mono);font-size:0.75rem;font-weight:500;
+  letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;
+  border:none;border-radius:var(--radius);transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-primary{background:var(--stamp);color:#fff}
+.btn-primary:hover{background:var(--stamp-dark)}
+.btn-secondary{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+.btn-secondary:hover{background:var(--gold);color:var(--ink)}
+.btn-ink{background:var(--ink);color:var(--paper-light)}
+.btn-ink:hover{background:#1a1515}
+.btn-sm{padding:6px 12px;font-size:0.7rem}
+
+.main{flex:1;padding:40px 48px;overflow-y:auto;max-height:100vh}
+
+/* === HEADER === */
+.header{margin-bottom:40px}
+.header h1{font-family:var(--font-display);font-size:2rem;font-weight:500;letter-spacing:0.01em;margin-bottom:4px}
+.header p{color:var(--slate);font-size:0.9rem;font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em}
+
+/* === STATS STRIP === */
+.stats{display:flex;gap:24px;margin-bottom:36px;flex-wrap:wrap}
+.stat-card{
+  background:var(--paper-light);border:1px solid var(--border);
+  padding:20px 24px;min-width:140px;position:relative;
+}
+.stat-card::after{
+  content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:var(--stamp);
+  transform:scaleX(0);transition:transform 0.3s;
+}
+.stat-card:hover::after{transform:scaleX(1)}
+.stat-num{font-family:var(--font-display);font-size:2.5rem;font-weight:700;line-height:1;color:var(--ink)}
+.stat-label{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--slate);margin-top:8px}
+
+/* === PANEL: ADD & FEED === */
+.panel{background:var(--paper-light);border:1px solid var(--border);margin-bottom:24px}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate);
+  cursor:pointer;
+}
+.panel-body{padding:20px;display:none}
+.panel.open .panel-body{display:block}
+
+.form-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.form-row:last-child{margin-bottom:0}
+.input{
+  padding:10px 14px;font-family:var(--font-body);font-size:0.9rem;
+  border:1px solid var(--border);background:var(--paper);
+  color:var(--ink);border-radius:var(--radius);flex:1;min-width:180px;
+  transition:border-color 0.2s;
+}
+.input:focus{outline:none;border-color:var(--stamp)}
+.input-mono{font-family:var(--font-mono);font-size:0.8rem}
+.textarea{
+  width:100%;min-height:120px;resize:vertical;
+  padding:12px 14px;font-family:var(--font-body);font-size:0.85rem;
+  border:1px solid var(--border);background:var(--paper);color:var(--ink);border-radius:var(--radius);
+  transition:border-color 0.2s;line-height:1.8;
+}
+.textarea:focus{outline:none;border-color:var(--stamp)}
+select.input{
+  appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232c2424'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+
+/* === AUTHOR CARDS === */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;margin-bottom:36px}
+.card{
+  background:var(--paper-light);border:1px solid var(--border);
+  padding:0;cursor:pointer;transition:all 0.25s;
+  position:relative;overflow:hidden;
+}
+.card:hover{box-shadow:var(--shadow);border-color:var(--gold)}
+.card.selected{border-color:var(--stamp);box-shadow:0 0 0 1px var(--stamp)}
+.card-header{
+  padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.card-name{font-family:var(--font-display);font-size:1.3rem;font-weight:500}
+.card-badge{
+  font-family:var(--font-mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;
+  padding:3px 8px;border-radius:var(--radius);
+}
+.badge-complete{background:var(--moss);color:#fff}
+.badge-partial{background:var(--gold);color:var(--ink)}
+.badge-empty{background:transparent;border:1px solid var(--border);color:var(--slate)}
+.card-body{padding:16px 20px}
+.card-field{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:0.85rem}
+.card-field:last-child{margin-bottom:0}
+.field-label{
+  font-family:var(--font-mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--slate);min-width:56px;flex-shrink:0;
+}
+.field-value{color:var(--ink);word-break:break-all}
+.field-empty{color:var(--border);font-style:italic}
+.card-source{
+  font-family:var(--font-mono);font-size:0.55rem;color:var(--gold-dark);
+  margin-left:4px;
+}
+
+/* === DETAIL PANEL === */
+.detail-overlay{
+  position:fixed;inset:0;background:rgba(44,36,36,0.3);
+  z-index:9;display:none;
+}
+.detail-overlay.show{display:block}
+.detail-panel{
+  position:fixed;right:0;top:0;bottom:0;width:520px;background:var(--paper);
+  border-left:1px solid var(--border);z-index:10;overflow-y:auto;
+  transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-4px 0 40px rgba(0,0,0,0.12);
+}
+.detail-panel.show{transform:translateX(0)}
+.detail-inner{padding:32px}
+.detail-close{
+  position:absolute;top:20px;right:20px;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:1.4rem;cursor:pointer;
+  background:transparent;border:1px solid var(--border);color:var(--ink);
+  transition:all 0.2s;border-radius:var(--radius);
+}
+.detail-close:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.detail-name{font-family:var(--font-display);font-size:1.8rem;margin-bottom:24px}
+.detail-section{margin-bottom:28px}
+.detail-section h3{
+  font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--slate);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);
+}
+.detail-field{margin-bottom:10px}
+.detail-field label{
+  display:block;font-family:var(--font-mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--slate);margin-bottom:2px;
+}
+.detail-field .val{font-size:0.9rem;color:var(--ink)}
+.detail-field .src{
+  font-family:var(--font-mono);font-size:0.6rem;color:var(--gold-dark);margin-top:2px;
+}
+.detail-field input{width:100%;margin-top:4px}
+.missing-mark{
+  display:inline-block;width:8px;height:8px;background:var(--stamp);border-radius:50%;margin-right:4px;
+}
+
+/* === TOAST === */
+.toast{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:var(--paper-light);padding:12px 24px;
+  font-family:var(--font-mono);font-size:0.75rem;z-index:99;
+  opacity:0;transition:opacity 0.3s;pointer-events:none;
+}
+.toast.show{opacity:1}
+
+/* === TASK QUEUE === */
+.task-item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 16px;border-bottom:1px solid var(--border);font-size:0.85rem;
+}
+.task-name{font-weight:600;min-width:60px}
+.task-source{color:var(--slate);font-size:0.8rem}
+.task-status{font-family:var(--font-mono);font-size:0.65rem;text-transform:uppercase;color:var(--gold)}
+
+/* === SEARCH WORKFLOW === */
+.search-panel{margin-bottom:20px}
+.search-step{
+  display:flex;align-items:flex-start;gap:12px;padding:14px 16px;
+  border-left:2px solid var(--border);margin-bottom:8px;transition:all 0.3s;
+}
+.search-step.active{border-left-color:var(--stamp);background:rgba(199,91,57,0.04)}
+.search-step.done{border-left-color:var(--moss)}
+.step-num{
+  font-family:var(--font-mono);font-size:0.7rem;font-weight:700;
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;flex-shrink:0;border:2px solid var(--border);color:var(--slate);
+}
+.search-step.active .step-num{border-color:var(--stamp);color:var(--stamp)}
+.search-step.done .step-num{border-color:var(--moss);color:var(--moss);background:var(--moss);color:#fff}
+.step-body{flex:1;font-size:0.85rem}
+.step-body .step-title{font-weight:600;margin-bottom:2px}
+.step-body .step-desc{color:var(--slate);font-size:0.8rem}
+.step-action{margin-top:8px}
+.card-search-bar{
+  display:flex;gap:6px;padding:10px 20px;border-top:1px solid var(--border);
+  background:var(--paper);align-items:center;
+}
+.card-search-bar .inst-input{
+  padding:5px 10px;font-family:var(--font-body);font-size:0.8rem;
+  border:1px solid var(--border);background:var(--paper-light);flex:1;min-width:0;
+}
+
+/* === RESPONSIVE === */
+@media(max-width:900px){
+  .app{flex-direction:column}
+  .sidebar{width:100%;flex-direction:row;align-items:center;padding:16px 20px;gap:16px}
+  .sidebar-logo span{display:none}
+  .sidebar-nav{display:none}
+  .sidebar-actions{flex-direction:row;margin-top:0}
+  .main{padding:24px}
+  .detail-panel{width:100vw}
+  .card-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    名称规范记录
+    <span>Author Agent v0.1</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="active" data-view="dashboard">总览</a>
+    <a href="#" data-view="tasks">提取队列</a>
+    <a href="#" data-view="batch">批量搜捕</a>
+  </nav>
+  <div class="sidebar-actions">
+    <button class="btn btn-secondary" onclick="refreshAll()">刷新</button>
+    <button class="btn btn-primary" onclick="saveAll()">保存导出</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="mainContent">
+  <div class="header">
+    <h1>名称规范文档</h1>
+    <p>网页搜捕 · 结构化提取 · 语义匹配就绪</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="statsStrip">
+    <div class="stat-card"><div class="stat-num" id="statRecords">0</div><div class="stat-label">规范记录</div></div>
+    <div class="stat-card"><div class="stat-num" id="statComplete">0</div><div class="stat-label">已完整</div></div>
+    <div class="stat-card"><div class="stat-num" id="statPending">0</div><div class="stat-label">待提取</div></div>
+    <div class="stat-card"><div class="stat-num" id="statMissing">0</div><div class="stat-label">缺关键字段</div></div>
+  </div>
+
+  <!-- Add Panel -->
+  <div class="panel" id="panelAdd">
+    <div class="panel-header" onclick="togglePanel('panelAdd')">+ 添加搜捕目标</div>
+    <div class="panel-body">
+      <div class="form-row">
+        <input class="input" id="addName" placeholder="姓名，如 张伟">
+        <input class="input" id="addInst" placeholder="机构（可选），如 广东外语外贸大学">
+        <button class="btn btn-primary" onclick="addAuthor()">添加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed Panel -->
+  <div class="panel" id="panelFeed">
+    <div class="panel-header" onclick="togglePanel('panelFeed')">+ 喂入网页文本</div>
+    <div class="panel-body">
+      <div class="form-row">
+        <input class="input" id="feedName" placeholder="姓名">
+        <select class="input" id="feedSource" style="max-width:220px">
+          <option value="论文HTML全文_作者简介">论文HTML全文 · 作者简介</option>
+          <option value="官网个人页">官网个人页</option>
+          <option value="期刊官网作者档案">期刊官网作者档案</option>
+          <option value="百度百科">百度百科</option>
+          <option value="论文摘要页">论文摘要页</option>
+          <option value="搜索引擎摘要">搜索引擎摘要</option>
+        </select>
+      </div>
+      <textarea class="textarea" id="feedText" placeholder="粘贴网页中提取的原始文本..."></textarea>
+      <div class="form-row" style="margin-top:12px">
+        <button class="btn btn-primary" onclick="feedText()">喂入并预提取</button>
+        <span style="color:var(--slate);font-size:0.8rem;align-self:center">
+          规则预提取：生卒年、性别、籍贯、机构。LLM提取需从「提取队列」触发。
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LLM Apply Panel -->
+  <div class="panel" id="panelApply">
+    <div class="panel-header" onclick="togglePanel('panelApply')">+ 应用 LLM 提取结果</div>
+    <div class="panel-body">
+      <div class="form-row">
+        <input class="input" id="applyName" placeholder="姓名">
+        <select class="input" id="applySource" style="max-width:220px">
+          <option value="论文HTML全文_作者简介">论文HTML全文 · 作者简介</option>
+          <option value="官网个人页">官网个人页</option>
+          <option value="期刊官网作者档案">期刊官网作者档案</option>
+          <option value="百度百科">百度百科</option>
+        </select>
+      </div>
+      <textarea class="textarea" id="applyJson" placeholder='粘贴 LLM 返回的 JSON: {"性别":"男","籍贯":"安徽庐江人","生卒年或个人活动日期":"1979-",...}' style="font-family:var(--font-mono);font-size:0.8rem"></textarea>
+      <div class="form-row" style="margin-top:12px">
+        <button class="btn btn-primary" onclick="applyResult()">应用提取结果</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Grid -->
+  <div class="card-grid" id="cardGrid"></div>
+
+  <!-- Task Queue View -->
+  <div id="taskView" style="display:none"></div>
+
+  <!-- Batch View -->
+  <div id="batchView" style="display:none">
+    <div class="panel open">
+      <div class="panel-header">批量导入搜捕目标</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <textarea class="textarea" id="batchInput" placeholder="每行一个目标，格式: 姓名:机构&#10;张伟:广东外语外贸大学&#10;刘伟:北京大学&#10;李明" style="font-family:var(--font-mono);font-size:0.8rem"></textarea>
+        </div>
+        <div class="form-row" style="margin-top:8px">
+          <button class="btn btn-primary" onclick="batchAdd()">批量添加</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-grid" id="batchCardGrid"></div>
+  </div>
+</main>
+
+</div>
+
+<!-- Detail Panel -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-inner" id="detailInner"></div>
+  <button class="detail-close" onclick="closeDetail()">&times;</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// === STATE ===
+let currentView = 'dashboard';
+
+// === API HELPERS ===
+async function api(url, opts={}) {
+  const res = await fetch(url, opts);
+  return res.json();
+}
+
+// === REFRESH ===
+async function refreshAll() {
+  const data = await api('/api/pipeline/status');
+  renderStats(data);
+  renderCards(data.records);
+  toast('已刷新');
+}
+
+// === STATS ===
+function renderStats(data) {
+  document.getElementById('statRecords').textContent = data.record_count;
+  document.getElementById('statPending').textContent = data.pending_tasks;
+  let complete=0, missing=0;
+  for(const [k,v] of Object.entries(data.records)) {
+    if(v.missing.length === 0) complete++;
+    else missing++;
+  }
+  document.getElementById('statComplete').textContent = complete;
+  document.getElementById('statMissing').textContent = missing;
+}
+
+// === CARDS ===
+function renderCards(records) {
+  const grid = document.getElementById('cardGrid');
+  if(Object.keys(records).length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--slate);font-style:italic">
+      暂无记录。通过上方「添加搜捕目标」开始，或「喂入网页文本」粘贴已提取的内容。
+    </div>`;
+    return;
+  }
+  grid.innerHTML = Object.entries(records).map(([name,rec]) => {
+    const pct = rec.total > 0 ? Math.round(rec.filled/rec.total*100) : 0;
+    const badgeCls = rec.missing.length===0 ? 'badge-complete' : (pct>=50 ? 'badge-partial' : 'badge-empty');
+    const badgeText = rec.missing.length===0 ? '完整' : `${rec.filled}/${rec.total}`;
+    const highlightFields = ['在职单位','生卒年或个人活动日期','籍贯','活动领域'];
+    const fieldHtml = highlightFields.map(f => {
+      const v = rec.fields[f];
+      const src = rec.sources[f] || '';
+      if(v) return `<div class="card-field"><span class="field-label">${f.replace('生卒年或个人活动日期','生卒年').replace('活动领域','方向')}</span><span class="field-value">${escapeHtml(v.substring(0,50))}</span>${src?`<span class="card-source">${src}</span>`:''}</div>`;
+      return `<div class="card-field"><span class="field-label">${f.replace('生卒年或个人活动日期','生卒年').replace('活动领域','方向')}</span><span class="field-empty">— 缺失</span></div>`;
+    }).join('');
+    return `<div class="card" id="card-${sanitize(name)}">
+      <div class="card-header">
+        <span class="card-name" onclick="openDetail('${escapeHtml(name)}')" style="cursor:pointer">${escapeHtml(name)}</span>
+        <span class="card-badge ${badgeCls}">${badgeText}</span>
+      </div>
+      <div class="card-body" onclick="openDetail('${escapeHtml(name)}')" style="cursor:pointer">${fieldHtml}</div>
+      <div class="card-search-bar">
+        <input class="inst-input" id="inst-${sanitize(name)}" placeholder="机构（如 广东外语外贸大学）" value="${(rec.fields||{})['在职单位']||''}">
+        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();startSearch('${escapeHtml(name)}')">搜捕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// === DETAIL PANEL ===
+async function openDetail(name) {
+  const data = await api('/api/record/' + encodeURIComponent(name));
+  if(data.error) return toast(data.error);
+
+  const highlightFields = ['在职单位','生卒年或个人活动日期','籍贯','活动领域','职业','学历','受教育机构','发表的著作实体'];
+  const fieldsHtml = highlightFields.map(f => {
+    const v = data.all_fields[f] || '';
+    const src = data.sources[f] || '';
+    const cls = v ? '' : 'missing-mark';
+    return `<div class="detail-field">
+      <label>${cls?`<span class="missing-mark"></span>`:''}${f}</label>
+      ${v ? `<div class="val">${escapeHtml(v)}</div>` : `<div class="val" style="color:var(--border);font-style:italic">缺失</div>`}
+      ${src ? `<div class="src">来源: ${escapeHtml(src)}</div>` : ''}
+      <input class="input input-mono" placeholder="手动补充..." value="${escapeHtml(v)}" data-field="${escapeHtml(f)}" onchange="updateField('${escapeHtml(name)}',this)">
+    </div>`;
+  }).join('');
+
+  document.getElementById('detailInner').innerHTML = `
+    <div class="detail-name">${escapeHtml(name)}</div>
+    <div class="detail-section">
+      <h3>高优先级字段</h3>
+      ${fieldsHtml}
+    </div>
+    <div class="detail-section" style="margin-top:24px">
+      <h3>缺失字段</h3>
+      ${data.missing.length > 0 ? data.missing.map(f=>`<span style="display:inline-block;margin:4px;padding:4px 10px;font-family:var(--font-mono);font-size:0.7rem;border:1px solid var(--stamp);color:var(--stamp)">${escapeHtml(f)}</span>`).join('') : '<span style="color:var(--moss);font-style:italic">高优先级字段完整</span>'}
+    </div>
+    <div class="detail-section">
+      <h3>来源追溯</h3>
+      ${Object.entries(data.sources).map(([f,s])=>`<div style="font-size:0.8rem;margin-bottom:4px"><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--slate)">${escapeHtml(f)}</span> ← <span style="color:var(--gold-dark)">${escapeHtml(s)}</span></div>`).join('')}
+    </div>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('show');
+  document.getElementById('detailPanel').classList.add('show');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('show');
+  document.getElementById('detailPanel').classList.remove('show');
+}
+
+async function updateField(name, input) {
+  const field = input.dataset.field;
+  const value = input.value;
+  await api('/api/record/' + encodeURIComponent(name), {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({fields: {[field]: value}, source: 'manual'})
+  });
+  toast(`已更新: ${field}`);
+  refreshAll();
+}
+
+// === ADD / FEED / APPLY ===
+async function addAuthor() {
+  const name = document.getElementById('addName').value.trim();
+  const inst = document.getElementById('addInst').value.trim();
+  if(!name) return toast('请输入姓名');
+  await api('/api/batch', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({targets:[{name, institution:inst}]})
+  });
+  document.getElementById('addName').value = '';
+  document.getElementById('addInst').value = '';
+  toast(`已添加并启动搜捕: ${name}`);
+  refreshAll();
+  // 添加后立即启动搜捕，传入机构
+  setTimeout(function(){ startSearch(name, inst); }, 500);
+}
+
+async function feedText() {
+  const name = document.getElementById('feedName').value.trim();
+  const source = document.getElementById('feedSource').value;
+  const text = document.getElementById('feedText').value.trim();
+  if(!name || !text) return toast('请填写姓名和文本');
+  await api('/api/feed', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name, source, text})
+  });
+  document.getElementById('feedText').value = '';
+  toast(`已喂入: ${name} (${source})`);
+  refreshAll();
+}
+
+async function applyResult() {
+  const name = document.getElementById('applyName').value.trim();
+  const source = document.getElementById('applySource').value;
+  const raw = document.getElementById('applyJson').value.trim();
+  if(!name || !raw) return toast('请填写姓名和JSON');
+  try {
+    const fields = JSON.parse(raw);
+    const clean = {};
+    for(const [k,v] of Object.entries(fields)) {
+      if(!k.startsWith('_') && v && typeof v === 'string') clean[k] = v;
+    }
+    await api('/api/apply', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name, fields: clean, source})
+    });
+    document.getElementById('applyJson').value = '';
+    toast(`已应用: ${name} (${Object.keys(clean).length} 个字段)`);
+    refreshAll();
+  } catch(e) {
+    toast('JSON 格式错误');
+  }
+}
+
+// === SAVE ===
+async function saveAll() {
+  const data = await api('/api/save', {method:'POST'});
+  toast(`已保存 ${data.files.length} 个文件`);
+}
+
+// === BATCH ===
+async function batchAdd() {
+  const raw = document.getElementById('batchInput').value.trim();
+  if(!raw) return toast('请输入目标列表');
+  const lines = raw.split('\n').filter(l=>l.trim());
+  const targets = lines.map(line => {
+    const parts = line.split(':');
+    return {name: parts[0].trim(), institution: (parts[1]||'').trim()};
+  });
+  await api('/api/batch', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({targets})
+  });
+  document.getElementById('batchInput').value = '';
+  toast(`已批量添加 ${targets.length} 个目标`);
+  refreshAll();
+}
+
+// === TASK QUEUE ===
+async function renderTasks() {
+  const tasks = await api('/api/tasks');
+  const view = document.getElementById('taskView');
+  if(tasks.length === 0) {
+    view.innerHTML = `<div style="text-align:center;padding:48px;color:var(--slate);font-style:italic">队列为空。喂入网页文本后，待提取任务会出现在这里。</div>`;
+    return;
+  }
+  view.innerHTML = `<div class="panel open">
+    <div class="panel-header">待提取队列 (${tasks.length})</div>
+    <div class="panel-body" style="padding:0">
+      ${tasks.map((t,i) => `<div class="task-item">
+        <span class="task-name">${escapeHtml(t.name)}</span>
+        <span class="task-source">${escapeHtml(t.source)}</span>
+        <button class="btn btn-sm btn-ink" onclick="loadTaskPrompt(${i})">查看 Prompt</button>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div id="promptDetail" style="margin-top:16px"></div>`;
+}
+
+function loadTaskPrompt(i) {
+  api('/api/tasks').then(tasks => {
+    const t = tasks[i];
+    if(!t) return;
+    document.getElementById('promptDetail').innerHTML = `<div class="panel open">
+      <div class="panel-header">提取 Prompt — ${escapeHtml(t.name)} (${escapeHtml(t.source)})</div>
+      <div class="panel-body">
+        <pre style="white-space:pre-wrap;font-family:var(--font-mono);font-size:0.75rem;line-height:1.6;max-height:400px;overflow-y:auto;background:var(--paper);padding:16px;border:1px solid var(--border)">${escapeHtml(t.prompt)}</pre>
+        <div class="form-row" style="margin-top:12px">
+          <button class="btn btn-primary" onclick="document.getElementById('applyName').value='${escapeHtml(t.name)}';document.getElementById('applySource').value='${escapeHtml(t.source)}';switchView('dashboard');document.getElementById('panelApply').classList.add('open')">切换到「应用LLM结果」</button>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+// === VIEW SWITCHING ===
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+  document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
+  document.getElementById('cardGrid').style.display = view==='dashboard' ? '' : 'none';
+  document.getElementById('taskView').style.display = view==='tasks' ? '' : 'none';
+  document.getElementById('batchView').style.display = view==='batch' ? '' : 'none';
+  document.getElementById('panelAdd').style.display = view!=='dashboard' ? 'none' : '';
+  document.getElementById('panelFeed').style.display = view!=='dashboard' ? 'none' : '';
+  document.getElementById('panelApply').style.display = view!=='dashboard' ? 'none' : '';
+  if(view==='tasks') renderTasks();
+}
+
+// === HELPERS ===
+function togglePanel(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+function escapeHtml(s) {
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function sanitize(s){ return String(s).replace(/[^a-zA-Z0-9一-鿿]/g,'_'); }
+
+// === SEARCH WORKFLOW ===
+let _activeSearchName = '';
+
+async function startSearch(name, instOverride) {
+  _activeSearchName = name;
+  const instEl = document.getElementById('inst-' + sanitize(name));
+  const institution = instOverride || (instEl ? instEl.value.trim() : '');
+
+  toast('启动搜捕: ' + name + (institution ? ' @ ' + institution : ''));
+
+  // 确保侧边详情面板打开
+  openDetailSearch(name);
+
+  updateSearchStep(name, 'step1', 'active', '正在打开知网高级检索页面...');
+  searchLog(name, '启动知网搜索...');
+
+  try {
+    const resp = await api('/api/search/start', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name, institution})
+    });
+    searchLog(name, JSON.stringify(resp).substring(0, 300));
+    handleSearchResponse(name, resp);
+  } catch(e) {
+    searchLog(name, '错误: ' + e.message);
+    updateSearchStep(name, 'step1', 'active', 'CDP Proxy 未连接，请确认 Chrome 已打开且 CDP Proxy 在运行');
+  }
+}
+
+function handleSearchResponse(name, resp) {
+  if(resp.status === 'complete' || resp.status === 'extracted') {
+    updateSearchStep(name, 'step1', 'done', 'CNKI搜索完成，找到 ' + resp.result_count + ' 条结果');
+    updateSearchStep(name, 'step2', 'done', '提取完成');
+    updateSearchStep(name, 'step3', 'done', resp.missing_high_priority && resp.missing_high_priority.length > 0
+      ? '待补全: ' + resp.missing_high_priority.join(', ')
+      : '高优先级字段完整');
+
+    // Show stages
+    var stagesHtml = '';
+    if(resp.stages) {
+      resp.stages.forEach(function(s) {
+        stagesHtml += '<div style="font-size:0.8rem;margin:2px 0;color:var(--slate)">' +
+          (s.status==='完成' ? '[OK] ' : '[..] ') + s.name + ': ' + (s.detail||'') + '</div>';
+      });
+    }
+    var step1Action = document.getElementById('step1Action-' + sanitize(name));
+    if(step1Action) step1Action.innerHTML = stagesHtml;
+
+    // Show fields
+    if(resp.fields) {
+      var fhtml = '<div style="margin-top:8px;font-size:0.85rem">';
+      for(var k in resp.fields) {
+        fhtml += '<div><b>' + escapeHtml(k) + '</b>: ' + escapeHtml(resp.fields[k].substring(0,60)) + '</div>';
+      }
+      fhtml += '</div>';
+      if(step1Action) step1Action.innerHTML += fhtml;
+    }
+    refreshAll();
+  } else if(resp.status === 'results') {
+    updateSearchStep(name, 'step1', 'done', '知网检索完成，找到 ' + resp.result_count + ' 条结果');
+    updateSearchStep(name, 'step2', 'active', '正在自动打开HTML全文...');
+    updateSearchStep(name, 'step3', 'pending', '等待上一步完成');
+
+    // 自动链：打开HTML → 提取简介 → 喂入流水线
+    autoExtractChain(name);
+  } else if(resp.status === 'captcha_required') {
+    updateSearchStep(name, 'step1', 'done', '知网检索完成，找到 ' + resp.result_count + ' 条结果');
+    updateSearchStep(name, 'step2', 'active', '需要滑动验证码');
+    updateSearchStep(name, 'step3', 'pending', '等待验证通过');
+    var step2Action = document.getElementById('step1Action-' + sanitize(name));
+    if(step2Action) {
+      step2Action.innerHTML = '<div style="padding:8px 12px;background:#fff3f0;border:1px solid var(--stamp);margin-bottom:8px;font-size:0.85rem">Chrome 知网页面弹出滑块验证，请手动滑动完成验证。</div>' +
+        '<button class="btn btn-sm btn-primary" onclick="retryAfterCaptcha(\'' + escapeHtml(name) + '\')">已滑完，继续提取</button>';
+    }
+  } else if(resp.status === 'manual_required') {
+    updateSearchStep(name, 'step1', 'active', resp.message || '需要手动操作');
+    var step1Action = document.getElementById('step1Action-' + sanitize(name));
+    if(step1Action) {
+      step1Action.innerHTML = '<div style="padding:8px 12px;background:#fff3f0;border:1px solid var(--stamp);margin-bottom:8px;font-size:0.85rem">' +
+        escapeHtml(resp.action || '请在Chrome中完成搜索') +
+        '</div><button class="btn btn-sm btn-primary" onclick="continueSearch(\'' + escapeHtml(name) + '\')">已完成搜索，继续</button>';
+    }
+  } else if(resp.error) {
+    searchLog(name, '错误: ' + resp.error);
+    updateSearchStep(name, 'step1', 'active', resp.error);
+  }
+}
+
+async function continueSearch(name) {
+  updateSearchStep(name, 'step1', 'done', '用户已完成搜索');
+  updateSearchStep(name, 'step2', 'active', '正在解析搜索结果...');
+  try {
+    var resp = await api('/api/search/continue/' + encodeURIComponent(name), {method:'POST'});
+    handleSearchResponse(name, resp);
+  } catch(e) {
+    searchLog(name, '错误: ' + e.message);
+  }
+}
+
+async function retryAfterCaptcha(name) {
+  updateSearchStep(name, 'step2', 'active', '验证通过，继续提取...');
+  setTimeout(function() { autoExtractChain(name); }, 500);
+}
+
+async function autoExtractChain(name) {
+  updateSearchStep(name, 'step2', 'active', '正在打开HTML全文并提取作者简介...');
+  try {
+    var resp = await api('/api/search/auto_chain/' + encodeURIComponent(name), {method:'POST'});
+    if(resp.status === 'extracted') {
+      updateSearchStep(name, 'step2', 'done', '作者简介已提取');
+      updateSearchStep(name, 'step3', 'done', '已喂入流水线，等待LLM解析');
+
+      searchLog(name, 'Bio: ' + (resp.bio||'').substring(0, 150));
+
+      // 显示提取prompt
+      var inner = document.getElementById('detailInner');
+      if(inner && resp.extraction_prompt) {
+        var div = document.createElement('div');
+        div.className = 'detail-section';
+        div.style.marginTop = '20px';
+        div.innerHTML = '<h3>LLM 提取 Prompt</h3>' +
+          '<textarea class="textarea" id="promptText" style="font-family:var(--font-mono);font-size:0.75rem;min-height:160px" readonly>' + escapeHtml(resp.extraction_prompt) + '</textarea>' +
+          '<div style="margin-top:8px;display:flex;gap:8px">' +
+          '<button class="btn btn-sm btn-primary" onclick="copyPrompt()">复制 Prompt</button>' +
+          '<button class="btn btn-sm btn-secondary" onclick="switchView(\"tasks\");refreshAll()">去提取队列</button>' +
+          '<button class="btn btn-sm btn-ink" onclick="refreshAll();closeDetail()">完成</button></div>';
+        inner.appendChild(div);
+      }
+      refreshAll();
+    } else if(resp.error) {
+      updateSearchStep(name, 'step2', 'active', '提取失败: ' + resp.error);
+      searchLog(name, 'Error: ' + resp.error);
+      // Fallback: show manual button
+      var step2Action = document.getElementById('step1Action-' + sanitize(name));
+      if(step2Action) step2Action.innerHTML = '<button class="btn btn-sm btn-primary" onclick="openFirstHTML(\'' + escapeHtml(name) + '\')">手动打开 HTML 全文</button>';
+    }
+  } catch(e) {
+    searchLog(name, 'Error: ' + e.message);
+  }
+}
+
+async function openFirstHTML(name) {
+  updateSearchStep(name, 'step2', 'active', '正在打开HTML全文...');
+  try {
+    var resp = await api('/api/search/open_html/' + encodeURIComponent(name), {method:'POST'});
+    if(resp.status === 'extracted') {
+      updateSearchStep(name, 'step2', 'done', '作者简介已提取');
+      updateSearchStep(name, 'step3', 'active', '将文本喂入流水线...');
+
+      var extractResp = await api('/api/search/extract_bio/' + encodeURIComponent(name), {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({bio: resp.bio, source:'论文HTML全文_作者简介'})
+      });
+
+      searchLog(name, '已喂入: ' + (resp.bio||'').substring(0, 100));
+      updateSearchStep(name, 'step3', 'done', '已喂入流水线，可复制 Prompt 进行 LLM 提取');
+
+      var detailInner = document.getElementById('detailInner');
+      if(detailInner && extractResp.extraction_prompt) {
+        var promptDiv = document.createElement('div');
+        promptDiv.className = 'detail-section';
+        promptDiv.style.marginTop = '20px';
+        promptDiv.innerHTML = '<h3>LLM 提取 Prompt</h3>' +
+          '<textarea class="textarea" id="promptText" style="font-family:var(--font-mono);font-size:0.75rem;min-height:160px" readonly>' + escapeHtml(extractResp.extraction_prompt) + '</textarea>' +
+          '<div style="margin-top:8px;display:flex;gap:8px">' +
+          '<button class="btn btn-sm btn-primary" onclick="copyPrompt()">复制 Prompt</button>' +
+          '<button class="btn btn-sm btn-secondary" onclick="switchView(\"tasks\");refreshAll();toast(\"请在提取队列中处理\")">去提取队列</button>' +
+          '<button class="btn btn-sm btn-ink" onclick="refreshAll();closeDetail();toast(\"已刷新\")">完成</button></div>';
+        detailInner.appendChild(promptDiv);
+      }
+      refreshAll();
+    } else if(resp.error) {
+      updateSearchStep(name, 'step2', 'active', '打开失败: ' + resp.error);
+      searchLog(name, '错误: ' + resp.error);
+    }
+  } catch(e) {
+    searchLog(name, '错误: ' + e.message);
+  }
+}
+
+function copyPrompt() {
+  var ta = document.getElementById('promptText');
+  if(ta) { navigator.clipboard.writeText(ta.value); toast('已复制 Prompt'); }
+}
+
+function updateSearchStep(name, stepId, status, desc) {
+  var step = document.getElementById('step' + stepId + '-' + sanitize(name));
+  if(!step) step = document.getElementById(stepId);
+  if(!step) return;
+  step.className = 'search-step ' + status;
+  var descEl = step.querySelector('.step-desc');
+  if(descEl) descEl.textContent = desc;
+}
+
+function searchLog(name, msg) {
+  var logEl = document.getElementById('searchLog-' + sanitize(name));
+  if(!logEl) logEl = document.getElementById('searchLog');
+  if(logEl) logEl.innerHTML += '<div>[' + new Date().toLocaleTimeString() + '] ' + escapeHtml(msg) + '</div>';
+}
+
+function openDetailSearch(name) {
+  openDetail(name);
+  // 等detail加载后替换为搜索面板
+  setTimeout(function() {
+    var inner = document.getElementById('detailInner');
+    if(!inner || inner.querySelector('.search-panel')) return;
+    var nameEl = inner.querySelector('.detail-name');
+    var panel = document.createElement('div');
+    panel.className = 'search-panel';
+    panel.style.marginTop = '12px';
+    panel.innerHTML =
+      '<div class="search-step active" id="step1-' + sanitize(name) + '">' +
+        '<div class="step-num">1</div>' +
+        '<div class="step-body"><div class="step-title">知网检索</div>' +
+        '<div class="step-desc">正在打开知网高级检索页面...</div>' +
+        '<div class="step-action" id="step1Action-' + sanitize(name) + '"></div></div></div>' +
+      '<div class="search-step" id="step2-' + sanitize(name) + '">' +
+        '<div class="step-num">2</div>' +
+        '<div class="step-body"><div class="step-title">HTML全文提取</div>' +
+        '<div class="step-desc">等待上一步完成后自动执行</div></div></div>' +
+      '<div class="search-step" id="step3-' + sanitize(name) + '">' +
+        '<div class="step-num">3</div>' +
+        '<div class="step-body"><div class="step-title">LLM结构化提取</div>' +
+        '<div class="step-desc">等待上一步完成后自动执行</div></div></div>' +
+      '<div id="searchLog-' + sanitize(name) + '" style="margin-top:16px;font-family:var(--font-mono);font-size:0.7rem;color:var(--slate);max-height:200px;overflow-y:auto"></div>';
+    if(nameEl) nameEl.insertAdjacentElement('afterend', panel);
+  }, 300);
+}
+
+// === INIT ===
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); switchView(a.dataset.view); });
+});
+document.getElementById('panelAdd').classList.add('open');
+refreshAll();
+</script>
+</body>
+</html>
