@@ -7,7 +7,6 @@
 
 配置:
     在 config.yaml 中设置 LLM_PROVIDER 和 DEEPSEEK_API_KEY
-    或设置环境变量 AUTHOR_AGENT_LLM / AUTHOR_AGENT_MODEL
 """
 import re
 import json
