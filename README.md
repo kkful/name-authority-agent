@@ -1,15 +1,21 @@
-# 名称规范记录智能体 v1.1
+# 名称规范记录智能体 v1.2
 
 网页搜捕 -> 结构化提取 -> dedup-librecord 匹配就绪
 
-## 环境要求
+## v1.2 更新 (2026-05-13)
 
-- **Python 3.9+** (推荐 3.11+)
-- **Node.js 22+** (CDP Proxy 依赖)
-- **Chrome 浏览器** (远程调试模式)
-- **web-access skill** (Claude Code 插件，提供 CDP Proxy)
+- **LLM自适应提取**: 论文+官网文本合并,DeepSeek API自动提取结构化字段
+- **零规则依赖**: 无论官网什么格式,LLM读语义自适应提取
+- **DeepSeek集成**: 兼容OpenAI协议,国内可用
 
-## 快速部署 (5分钟)
+## v1.1 更新
+
+- 修复: 论文标题过滤表头行
+- 修复: JSON解析容错
+- 修复: cdp_client import错误
+- 优化: 教育/工作经历分离
+
+## 快速部署
 
 ### 1. 克隆项目
 
@@ -18,13 +24,26 @@ git clone https://github.com/kkful/name-authority-agent.git
 cd name-authority-agent
 ```
 
-### 2. 安装 Python 依赖
+### 2. 安装依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. 配置 Chrome 远程调试
+### 3. 配置 DeepSeek API Key（v1.2 新增）
+
+编辑 `config.yaml`，填入你的 DeepSeek API Key:
+
+```yaml
+LLM_PROVIDER: deepseek
+LLM_MODEL: deepseek-chat
+DEEPSEEK_API_KEY: sk-xxxxxxxxxxxxxxxx
+```
+
+> Key 在 https://platform.deepseek.com 获取，新用户有免费额度。
+> 不填 Key 也能用，只是最后一步 LLM 提取会跳过，字段由正则规则提取。
+
+### 4. 配置 Chrome 远程调试
 
 打开 Chrome，地址栏输入:
 ```
@@ -32,59 +51,62 @@ chrome://inspect/#remote-debugging
 ```
 勾选 **"Allow remote debugging for this browser instance"**，重启 Chrome。
 
-### 4. 启动 CDP Proxy
+### 5. 启动 CDP Proxy
 
 ```bash
-# 在项目目录下，确保 web-access skill 已安装
-node C:/Users/Administrator/.claude/skills/web-access/scripts/cdp-proxy.mjs
+node C:/Users/Administrator/.claude/skills/web-access/scripts/check-deps.mjs
 ```
 
-> 或者使用 web-access skill 的启动脚本:
-> ```bash
-> node C:/Users/Administrator/.claude/skills/web-access/scripts/check-deps.mjs
-> ```
-
-### 5. 启动 Web 服务
+### 6. 启动 Web 服务
 
 ```bash
+# 方式一: 双击 start_server.bat
+# 方式二:
 python server.py
 ```
 
-### 6. 打开管理界面
+### 7. 打开界面
 
 浏览器访问: **http://127.0.0.1:8820**
 
-### 7. 首次使用
+### 8. 首次激活
 
-在界面添加作者 + 机构后，Chrome 中会自动打开知网页面。**手动搜索一次**以激活会话（仅首次需要），之后所有搜捕全自动。
+知网页面第一次会弹通知，手动搜索一次后，所有搜捕全自动。
+
+## 重启方式
+
+修改 `config.yaml` 后需要重启:
+
+```bash
+# 关闭正在运行的服务 (Ctrl+C)
+# 然后重新启动:
+python server.py
+```
+
+或直接双击 `start_server.bat`。
 
 ## 项目结构
 
 ```
 author_agent/        # Python核心包
-  cdp_client.py      # CDP Proxy 客户端
+  record.py          # 字段提取(正则+LLM)
+  extractor.py       # LLM提取器(DeepSeek/Claude/OpenAI)
   cnki_api.py        # 知网同步XHR搜索
-  record.py          # 字段提取(论文/官网)
+  cdp_client.py      # CDP Proxy客户端
   schema.py          # 16个字段定义
+config.yaml          # 配置文件(API Key等)
 server.py            # Flask Web服务
-static/index.html    # Web前端界面
-entity_matching2/    # Excel输出目录
+start_server.bat     # 一键启动脚本
+static/index.html    # Web前端
+entity_matching2/    # Excel输出
 ```
 
 ## 问题排查
 
 | 问题 | 解决 |
 |------|------|
-| CDP Proxy 未运行 | 确认 Chrome 已开启远程调试，Proxy 已启动 |
-| 知网搜索无结果 | Chrome 知网页面手动搜索一次激活 Classid |
-| 搜捕卡住不动 | 刷新 http://127.0.0.1:8820 重新添加 |
-| 保存Excel失败 | 关闭已打开的 Excel 文件再保存 |
-| 字段不准确 | 官网数据会自动覆盖论文数据，优先补全官网 |
-
-## v1.1 更新 (2026-05-13)
-
-- 修复: 论文标题过滤表头行
-- 修复: JSON解析容错
-- 修复: cdp_client import错误
-- 优化: 教育/工作经历分离
-- 优化: 邮箱/生年防合著者污染
+| CDP Proxy 未运行 | 确认Chrome远程调试已开启,Proxy已启动 |
+| 知网搜索无结果 | Chrome知网页面手动搜索一次激活 |
+| LLM提取跳过 | 确认config.yaml中DEEPSEEK_API_KEY已填写正确 |
+| 保存Excel失败 | 关闭已打开的Excel文件 |
+| 字段不准确 | LLM提取会自动覆盖补全,无需手动调整 |
