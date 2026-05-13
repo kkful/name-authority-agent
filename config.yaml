@@ -1,0 +1,9 @@
+# author_agent 配置文件
+# 修改后重启 python server.py 生效
+
+LLM_PROVIDER: deepseek
+LLM_MODEL: deepseek-chat
+
+# DeepSeek API Key
+# 从 https://platform.deepseek.com 获取，填入下方:
+DEEPSEEK_API_KEY: sk-xxxxxxxxxxxxxxxx
